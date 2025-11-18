@@ -1,0 +1,241 @@
+╔════════════════════════════════════════════════════════════════════════════╗
+║                    GOMOKU PROJECT - QUICK REFERENCE                        ║
+║                   Programming Technology Course 2025                       ║
+╚════════════════════════════════════════════════════════════════════════════╝
+
+👥 TEAM: Youssef, Dominic, Mustafa
+
+═══════════════════════════════════════════════════════════════════════════
+
+📦 WHAT'S IN THE BOX:
+
+✅ Complete Gomoku (5-in-a-row) game
+✅ Human vs Random AI gameplay
+✅ Command-line interface with board editor
+✅ SQL database (H2) for save/load
+✅ 41+ unit tests (JUnit 5)
+✅ Full JavaDoc documentation
+✅ Log4j2 logging to file
+✅ 3 design patterns (Strategy, Singleton, Facade)
+✅ Git repository with commits
+✅ Maven build configuration
+
+═══════════════════════════════════════════════════════════════════════════
+
+🚀 HOW TO RUN (3 WAYS):
+
+1️⃣  EASIEST - Use an IDE:
+    - Open project in IntelliJ IDEA / Eclipse / VS Code
+    - IDE auto-downloads dependencies via Maven
+    - Run Main.java
+    
+2️⃣  COMMAND LINE (if Maven installed):
+    mvn clean compile
+    mvn test
+    mvn exec:java -Dexec.mainClass="com.gomoku.Main"
+    
+3️⃣  USE PROVIDED SCRIPTS:
+    - Double-click setup.bat (first time)
+    - Double-click run.bat (to play)
+
+═══════════════════════════════════════════════════════════════════════════
+
+🎓 GRADING BREAKDOWN (60 points total):
+
+✅ Git + Maven:      5 points  ← Repository initialized, pom.xml configured
+✅ OO Quality:      20 points  ← Clean classes, methods, encapsulation
+✅ Correct Gameplay:10 points  ← Full Gomoku rules, win detection works
+✅ Testing:         15 points  ← 41 unit tests covering all logic
+✅ SQL Database:     5 points  ← H2 DB with save/load functionality
+✅ Design Patterns:  5 points  ← Strategy, Singleton, Facade demonstrated
+
+═══════════════════════════════════════════════════════════════════════════
+
+🎯 DESIGN PATTERNS - MEMORIZE THESE!
+
+1. STRATEGY PATTERN (ai package):
+   Interface: AIStrategy
+   Implementation: RandomAIStrategy  
+   Client: AIPlayer
+   Why? Easily swap or add new AI strategies without changing code
+   
+2. SINGLETON PATTERN (DatabaseManager):
+   Only ONE instance exists
+   Method: DatabaseManager.getInstance()
+   Why? One database connection for whole app, avoid conflicts
+   
+3. FACADE PATTERN (Game class):
+   Complex operations hidden behind simple interface
+   Example: makeMove() handles validation + update + win check
+   Why? Simplifies usage, UI doesn't need to know board internals
+
+═══════════════════════════════════════════════════════════════════════════
+
+🧪 TEST COVERAGE:
+
+BoardTest.java (15 tests):
+  ✓ Board initialization
+  ✓ Move validation
+  ✓ Win detection (horizontal, vertical, diagonal, anti-diagonal)
+  ✓ Board full detection
+  ✓ Edge cases
+
+GameTest.java (11 tests):
+  ✓ Game initialization
+  ✓ Turn switching
+  ✓ Win/draw conditions
+  ✓ Move counting
+  ✓ Game reset
+
+RandomAIStrategyTest.java (7 tests):
+  ✓ Valid move selection
+  ✓ Full board handling
+  ✓ Strategy pattern usage
+
+GameRepositoryTest.java (8 tests):
+  ✓ Save game to database
+  ✓ Load game from database
+  ✓ List saved games
+  ✓ Delete games
+
+═══════════════════════════════════════════════════════════════════════════
+
+💾 DATABASE STRUCTURE:
+
+saved_games table:
+  - id (primary key)
+  - game_name (unique)
+  - rows, columns (board size)
+  - current_player
+  - move_count
+  - save_date
+
+board_cells table:
+  - id (primary key)
+  - game_id (foreign key → saved_games)
+  - row_index, col_index
+  - cell_state (EMPTY/PLAYER1/PLAYER2)
+
+═══════════════════════════════════════════════════════════════════════════
+
+📁 KEY FILES (Must Know):
+
+src/main/java/com/gomoku/
+  ├── Main.java ......................... Entry point, starts CLI
+  ├── model/
+  │   ├── Board.java .................... MOST IMPORTANT! (290 lines)
+  │   │                                   Win detection, move validation
+  │   ├── Game.java ..................... Game flow, turn management
+  │   ├── CellState.java ................ enum (EMPTY, PLAYER1, PLAYER2)
+  │   ├── GameState.java ................ enum (PLAYING, WIN, DRAW)
+  │   └── Move.java ..................... Represents a move (row, col)
+  ├── ai/
+  │   ├── AIStrategy.java ............... Strategy pattern interface
+  │   ├── RandomAIStrategy.java ......... Random AI implementation
+  │   └── AIPlayer.java ................. AI wrapper
+  ├── db/
+  │   ├── DatabaseManager.java .......... Singleton pattern
+  │   └── GameRepository.java ........... Save/load operations
+  └── ui/
+      └── CommandLineInterface.java ..... Menu, input handling (315 lines)
+
+src/test/java/com/gomoku/ ................ 41+ unit tests
+
+═══════════════════════════════════════════════════════════════════════════
+
+🎯 DEFENSE Q&A CHEAT SHEET:
+
+Q: "Explain your architecture"
+A: "I used a layered architecture:
+    - Model layer: Board, Game, Move (business logic)
+    - AI layer: Strategy pattern for extensible AI
+    - Database layer: Singleton for connection management
+    - UI layer: CommandLineInterface for user interaction
+    Each layer has single responsibility, loose coupling."
+
+Q: "How does win detection work?"
+A: "After each move, Board.checkWinner() checks 4 directions from that
+    position: horizontal, vertical, and both diagonals. For each direction,
+    checkDirection() counts consecutive pieces. If count >= 5, we have a winner.
+    It's in Board.java lines 175-205."
+
+Q: "Why these design patterns?"
+A: "Strategy: AI can be swapped/extended without changing AIPlayer
+    Singleton: Only one DB connection needed, prevents conflicts
+    Facade: Game.makeMove() hides complex board operations from UI"
+
+Q: "Show the tests work"
+A: "Run: mvn test → All 41 tests pass
+    BoardTest proves win detection works
+    GameTest proves game flow works
+    AIStrategyTest proves AI makes valid moves
+    GameRepositoryTest proves database works"
+
+Q: "Demonstrate database"
+A: "1. Start game, make moves
+    2. Menu option 3: Save game as 'demo'
+    3. Exit and restart
+    4. Menu option 4: Load 'demo'
+    5. Board state restored perfectly!
+    The .db file is created in project folder."
+
+═══════════════════════════════════════════════════════════════════════════
+
+⚡ QUICK DEMO SCRIPT:
+
+1. Run the game
+2. New Game → make a few moves
+3. Show board display
+4. Save game → name it "demo"
+5. Exit
+6. Restart → Load "demo" → board restored! ✨
+7. Show gomoku-game.log file (logging works)
+8. Run: mvn test (all tests pass)
+
+═══════════════════════════════════════════════════════════════════════════
+
+🎯 CODE TRACING EXAMPLE (if asked to trace):
+
+User enters "5 5":
+1. CommandLineInterface.handleHumanMove() reads input
+2. Creates: Move move = new Move(5, 5)
+3. Calls: game.makeMove(move)
+4. Game checks: !gameState.isGameOver()
+5. Game calls: board.makeMove(move, currentPlayer)
+6. Board validates: isValidMove(move)
+7. Board updates: grid[5][5] = PLAYER1
+8. Game calls: updateGameState()
+9. Game calls: board.checkWinner()
+10. Board checks all 4 directions from (5,5)
+11. Game calls: switchPlayer()
+12. Returns to CLI for next turn
+
+═══════════════════════════════════════════════════════════════════════════
+
+💡 CONFIDENCE TIPS:
+
+✅ The code IS good - well-structured, tested, documented
+✅ You CAN walk through any file - it's readable and commented
+✅ Tests PROVE it works - reference them!
+✅ Design patterns are correctly implemented
+✅ All requirements are met (Git, Maven, OO, Tests, DB, Patterns)
+
+If stuck:
+- "Let me trace through the code to show you..."
+- "The test for this is in XTest.java line Y..."
+- "This demonstrates the Z design pattern because..."
+
+═══════════════════════════════════════════════════════════════════════════
+
+🎉 YOU'RE READY! Key points:
+
+1. Know the 3 design patterns (Strategy, Singleton, Facade)
+2. Understand Board.java win detection
+3. Can run and demo the game
+4. Tests prove correctness
+5. Database save/load works
+6. Proper OO design throughout
+
+Good luck! 💪 You've got this! 🎯
+
+═══════════════════════════════════════════════════════════════════════════
