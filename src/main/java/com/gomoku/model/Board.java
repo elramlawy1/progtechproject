@@ -159,69 +159,88 @@ public class Board {
     }
     
     /**
-     * Checks if there is a winner on the board.
+     * SIMPLE: Checks if there is a winner on the board.
+     * HOW IT WORKS: Look at every cell, if it has a piece, check if that piece
+     * is part of 5-in-a-row in any direction.
      * 
-     * @return the winning player, or EMPTY if no winner
+     * @return the winning player (PLAYER1 or PLAYER2), or EMPTY if no winner yet
      */
     public CellState checkWinner() {
-        // Check all positions for potential winning sequences
+        // Look at every cell on the board
         for (int row = 0; row < rows; row++) {
             for (int col = 0; col < columns; col++) {
                 CellState cell = grid[row][col];
+                
+                // If this cell has a piece (not empty)
                 if (cell != CellState.EMPTY) {
+                    // Check if this piece is part of a winning line
                     if (checkWinFrom(row, col, cell)) {
                         logger.info("Winner found: {}", cell);
-                        return cell;
+                        return cell;  // Found a winner!
                     }
                 }
             }
         }
-        return CellState.EMPTY;
+        return CellState.EMPTY;  // No winner found
     }
     
     /**
-     * Checks if there's a winning sequence starting from a position.
+     * SIMPLE: Starting from one position, check all 4 directions for 5-in-a-row.
+     * DIRECTIONS: → horizontal, ↓ vertical, ↘ diagonal, ↙ anti-diagonal
      * 
-     * @param row starting row
-     * @param col starting column
-     * @param player the player to check for
-     * @return true if a winning sequence exists
+     * @param row starting row position
+     * @param col starting column position  
+     * @param player which player to check (PLAYER1 or PLAYER2)
+     * @return true if found 5 in a row in any direction
      */
     private boolean checkWinFrom(int row, int col, CellState player) {
-        // Check horizontal
+        // Check 4 directions from this position:
+        
+        // 1. Check → horizontal (same row, move right)
         if (checkDirection(row, col, 0, 1, player)) return true;
-        // Check vertical
+        
+        // 2. Check ↓ vertical (same column, move down)
         if (checkDirection(row, col, 1, 0, player)) return true;
-        // Check diagonal (top-left to bottom-right)
+        
+        // 3. Check ↘ diagonal (move right and down)
         if (checkDirection(row, col, 1, 1, player)) return true;
-        // Check anti-diagonal (top-right to bottom-left)
+        
+        // 4. Check ↙ anti-diagonal (move right and up)
         if (checkDirection(row, col, 1, -1, player)) return true;
         
-        return false;
+        return false;  // No 5-in-a-row found
     }
     
     /**
-     * Checks for WIN_COUNT consecutive pieces in a direction.
+     * SIMPLE: Count pieces in one direction. If we find 5, it's a win!
+     * EXAMPLE: From position (5,5), check → right by adding 0 to row, +1 to col each time
+     *          Position (5,5), then (5,6), then (5,7), then (5,8), then (5,9)
+     *          If all 5 positions have same player → WIN!
      * 
      * @param row starting row
      * @param col starting column
-     * @param deltaRow row direction
-     * @param deltaCol column direction
-     * @param player the player to check for
-     * @return true if WIN_COUNT consecutive pieces found
+     * @param deltaRow how much to move row each step (0=stay, 1=down, -1=up)
+     * @param deltaCol how much to move column each step (0=stay, 1=right, -1=left)
+     * @param player which player we're checking
+     * @return true if found 5 consecutive pieces
      */
     private boolean checkDirection(int row, int col, int deltaRow, int deltaCol, CellState player) {
-        int count = 0;
+        int count = 0;  // Count how many pieces in a row
+        
+        // Check 5 positions in this direction
         for (int i = 0; i < WIN_COUNT; i++) {
-            int r = row + i * deltaRow;
-            int c = col + i * deltaCol;
+            int r = row + i * deltaRow;    // Calculate new row
+            int c = col + i * deltaCol;    // Calculate new column
+            
+            // If position is valid AND has same player's piece
             if (isValidPosition(r, c) && grid[r][c] == player) {
-                count++;
+                count++;  // Found another piece!
             } else {
-                break;
+                break;    // Found empty or opponent piece, stop counting
             }
         }
-        return count >= WIN_COUNT;
+        
+        return count >= WIN_COUNT;  // Return true if we found 5 or more
     }
     
     /**

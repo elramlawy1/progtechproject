@@ -9,9 +9,22 @@ import java.sql.SQLException;
 import java.sql.Statement;
 
 /**
- * Database manager using Singleton design pattern.
- * Manages the H2 database connection and schema initialization.
- * Only one instance of this class exists throughout the application.
+ * SIMPLE: Database manager using SINGLETON PATTERN.
+ * 
+ * SINGLETON PATTERN: Only ONE instance of this class can exist!
+ * 
+ * WHY? We need exactly ONE database connection for the whole program.
+ * If we create multiple connections, they might conflict or waste resources.
+ * 
+ * HOW IT WORKS:
+ * - Constructor is private (can't create new DatabaseManager())
+ * - Use DatabaseManager.getInstance() to get the single instance
+ * - First call creates it, all other calls return the same one
+ * 
+ * EXAMPLE:
+ *   DatabaseManager db1 = DatabaseManager.getInstance();
+ *   DatabaseManager db2 = DatabaseManager.getInstance();
+ *   db1 == db2  // TRUE! They're the exact same object!
  * 
  * @author Gomoku Team
  * @version 1.0
@@ -42,15 +55,21 @@ public class DatabaseManager {
     }
     
     /**
-     * Gets the single instance of DatabaseManager (Singleton pattern).
+     * SINGLETON PATTERN: Get the one and only instance.
      * 
-     * @return the DatabaseManager instance
+     * HOW IT WORKS:
+     * - If instance doesn't exist yet → create it
+     * - If instance already exists → return existing one
+     * - 'synchronized' means only one thread can execute this at a time
+     *   (prevents creating two instances by accident)
+     * 
+     * @return the single DatabaseManager instance (always the same one!)
      */
     public static synchronized DatabaseManager getInstance() {
         if (instance == null) {
-            instance = new DatabaseManager();
+            instance = new DatabaseManager();  // Create first time only
         }
-        return instance;
+        return instance;  // Always return the same instance
     }
     
     /**

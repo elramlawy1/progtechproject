@@ -4,9 +4,11 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 /**
- * Main game logic class for Gomoku.
- * Manages the game flow, turn handling, and game state updates.
- * Demonstrates the Facade design pattern by providing a simple interface to complex game logic.
+ * SIMPLE: Main game controller - manages whose turn it is and if someone won.
+ * 
+ * FACADE PATTERN: This class hides the complexity of the board.
+ * Instead of UI calling board.makeMove(), board.checkWinner(), board.switchPlayer(),
+ * UI just calls ONE method: game.makeMove() and this class handles everything!
  * 
  * @author Gomoku Team
  * @version 1.0
@@ -77,45 +79,68 @@ public class Game {
     }
     
     /**
-     * Makes a move for the current player.
-     * Validates the move, updates the board, checks for win/draw, and switches players.
+     * SIMPLE: The main method! Does everything needed for one move.
      * 
-     * @param move the move to make
-     * @return true if the move was successful
+     * WHAT IT DOES:
+     * 1. Check if game is already over (can't move if game ended)
+     * 2. Try to place the piece on the board
+     * 3. Count this move
+     * 4. Check if someone won or if it's a draw
+     * 5. Switch to other player (if game not over)
+     * 
+     * THIS IS THE FACADE PATTERN - one simple method does many things!
+     * 
+     * @param move the position where to place the piece
+     * @return true if move worked, false if invalid move
      */
     public boolean makeMove(Move move) {
+        // Step 1: Make sure game is still playing
         if (gameState.isGameOver()) {
             logger.warn("Attempted move when game is over");
-            return false;
+            return false;  // Can't move, game already ended
         }
         
+        // Step 2: Try to place piece on board
         if (!board.makeMove(move, currentPlayer)) {
-            return false;
+            return false;  // Invalid move (position taken or out of bounds)
         }
         
+        // Step 3: Count this move
         moveCount++;
+        
+        // Step 4: Check if game ended (someone won or draw)
         updateGameState();
         
+        // Step 5: Switch to other player (if game still going)
         if (!gameState.isGameOver()) {
             switchPlayer();
         }
         
-        return true;
+        return true;  // Move successful!
     }
     
     /**
-     * Switches the current player.
+     * SIMPLE: Change from PLAYER1 to PLAYER2, or PLAYER2 to PLAYER1.
+     * Uses ternary operator: (condition) ? valueIfTrue : valueIfFalse
      */
     private void switchPlayer() {
+        // If current player is PLAYER1, switch to PLAYER2, otherwise switch to PLAYER1
         currentPlayer = (currentPlayer == CellState.PLAYER1) ? CellState.PLAYER2 : CellState.PLAYER1;
         logger.debug("Player switched to {}", currentPlayer);
     }
     
     /**
-     * Updates the game state by checking for a winner or draw.
+     * SIMPLE: Check if someone won or if it's a draw.
+     * 
+     * HOW IT WORKS:
+     * 1. Ask the board "is there a winner?"
+     * 2. If PLAYER1 has 5-in-a-row → PLAYER1 wins
+     * 3. If PLAYER2 has 5-in-a-row → PLAYER2 wins  
+     * 4. If board is full and no winner → DRAW
+     * 5. Otherwise → game continues
      */
     private void updateGameState() {
-        CellState winner = board.checkWinner();
+        CellState winner = board.checkWinner();  // Ask board who won
         
         if (winner == CellState.PLAYER1) {
             gameState = GameState.PLAYER1_WIN;
@@ -127,6 +152,7 @@ public class Game {
             gameState = GameState.DRAW;
             logger.info("Game ended: Draw");
         }
+        // If none of above, gameState stays PLAYING
     }
     
     /**

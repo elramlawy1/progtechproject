@@ -4,8 +4,15 @@ import com.gomoku.model.Board;
 import com.gomoku.model.Move;
 
 /**
- * Strategy interface for AI opponents.
- * This demonstrates the Strategy design pattern - different AI strategies can be implemented.
+ * SIMPLE: Interface for AI strategies (STRATEGY PATTERN).
+ * 
+ * WHY USE THIS: We might want different AI types:
+ * - RandomAI (picks randomly) ← we have this one!
+ * - SmartAI (blocks opponent, tries to win)
+ * - DefensiveAI (focuses on blocking)
+ * 
+ * STRATEGY PATTERN: Define an interface, different AIs implement it.
+ * Then we can easily swap one AI for another without changing other code!
  * 
  * @author Gomoku Team
  * @version 1.0

@@ -4,8 +4,15 @@ import com.gomoku.model.Board;
 import com.gomoku.model.Move;
 
 /**
- * AI Player that uses a strategy to choose moves.
- * This demonstrates the Strategy design pattern - the AI can use different strategies.
+ * SIMPLE: AI Player that uses a strategy to choose moves.
+ * 
+ * STRATEGY PATTERN EXAMPLE:
+ * - AIPlayer doesn't know HOW to pick moves
+ * - It just asks its strategy "what move should I make?"
+ * - We can swap strategies easily: aiPlayer.setStrategy(new SmartAI())
+ * 
+ * This is like having a chess player who can switch between different
+ * playing styles without changing the player itself!
  * 
  * @author Gomoku Team
  * @version 1.0
@@ -41,13 +48,14 @@ public class AIPlayer {
     }
     
     /**
-     * Makes the AI choose its next move.
+     * SIMPLE: Ask the strategy to choose a move.
+     * The AIPlayer doesn't decide - it delegates to its strategy!
      * 
      * @param board the current game board
-     * @return the chosen move
+     * @return the move chosen by the strategy
      */
     public Move makeMove(Board board) {
-        return strategy.chooseMove(board);
+        return strategy.chooseMove(board);  // Ask strategy: "what move should I make?"
     }
     
     /**
