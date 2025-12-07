@@ -86,8 +86,6 @@ src/
 ## Authors
 
 - Youssef
-- Dominic
-- Mustafa
 
 ## Course
 
